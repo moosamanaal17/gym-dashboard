@@ -27,38 +27,129 @@ public class EntryCatalog extends AbstractEntryCatalog {
 
     @Override
     public EntryPropertyMap parseEntryLine(String line) throws IllegalArgumentException {
-        // TODO delete body and implement
+        String[] parts = line.split(",");
+
+        if (parts.length != 15) {
+            throw new IllegalArgumentException("Malformed entry line: Expected 15 values, but got "
+                    + parts.length + " -> " + line);
+        }
         EntryPropertyMap entryPropertyMap = new EntryPropertyMap();
+
+
+        entryPropertyMap.putDetail(EntryDetail.GENDER, requireNonEmpty(parts[1], 1, line));
+        entryPropertyMap.putDetail(EntryDetail.WORKOUT_TYPE, requireNonEmpty(parts[9], 9, line));
+
+        EntryProperty[] properties = {
+                EntryProperty.AGE,
+                EntryProperty.WEIGHT,
+                EntryProperty.HEIGHT,
+                EntryProperty.MAX_BPM,
+                EntryProperty.AVG_BPM,
+                EntryProperty.RESTING_BPM,
+                EntryProperty.SESSION_DURATION,
+                EntryProperty.CALORIES_BURNED,
+                EntryProperty.BODY_FAT_PERCENTAGE,
+                EntryProperty.WATER_INTAKE,
+                EntryProperty.WORKOUT_FREQUENCY,
+                EntryProperty.EXPERIENCE_LEVEL,
+                EntryProperty.BMI
+        };
+
+        int[] propertyIndexes = {
+                0, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14
+        };
+
+        for (int i = 0; i < properties.length; i++) {
+            double value = parseValidatedDouble(parts[propertyIndexes[i]], propertyIndexes[i], line);
+            entryPropertyMap.putProperty(properties[i], value);
+        }
         return entryPropertyMap;
     }
 
     @Override
     public List<Entry> getEntriesListByEntryDetail(List<Entry> filteredEntriesList, EntryDetail entryDetail, String name) {
-        // TODO delete body and implement
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("The detail name cannot be null or blank.");
+        }
+        List<Entry> filteredEntries = new ArrayList<>();
+
+        for (Entry entry : filteredEntriesList) {
+            String detailValue = entry.getEntryDetail(entryDetail);
+
+            if (detailValue != null && detailValue.equalsIgnoreCase(name.trim())) {
+                filteredEntries.add(entry);
+            }
+        }
+        filteredEntriesList = filteredEntries;
         return filteredEntriesList;
     }
 
     @Override
     public double getMinimumValue(EntryProperty entryProperty, List<Entry> entriesList) throws NoSuchElementException {
-        // TODO delete body and implement
-        return -1;
+        if (entriesList == null || entriesList.isEmpty()) {
+            throw new NoSuchElementException("Entry list is empty. Cannot compute minimum.");
+        }
+
+        double minimumValue = Double.MAX_VALUE;
+
+        for (Entry entry : entriesList) {
+            double value = entry.getEntryProperty(entryProperty);
+            if (value < minimumValue) {
+                minimumValue = value;
+            }
+        }
+        return minimumValue;
     }
 
     @Override
     public double getMaximumValue(EntryProperty entryProperty, List<Entry> entriesList) throws NoSuchElementException {
-        // TODO delete body and implement
-        return -1;
+        if (entriesList == null || entriesList.isEmpty()) {
+            throw new NoSuchElementException("Entry list is empty. Cannot compute maximum.");
+        }
+
+        double maximumValue = -Double.MAX_VALUE;
+
+        for (Entry entry : entriesList) {
+            double value = entry.getEntryProperty(entryProperty);
+            if (value > maximumValue) {
+                maximumValue = value;
+            }
+        }
+        return maximumValue;
     }
 
     @Override
     public double getAverageValue(EntryProperty entryProperty, List<Entry> entriesList) throws NoSuchElementException {
-        // TODO delete body and implement
-        return -1;
+        if (entriesList == null || entriesList.isEmpty()) {
+            throw new NoSuchElementException("Entry list is empty. Cannot compute average value.");
+        }
+        double sum = 0.0;
+
+        for (Entry entry : entriesList) {
+            sum += entry.getEntryProperty(entryProperty);
+        }
+        return sum / entriesList.size();
     }
 
     @Override
     public List<Entry> getFirstFiveEntries() {
-        // TODO delete body and implement
-        return new ArrayList<>();
+        int end = Math.min(entriesList.size(), 5);
+        return new ArrayList<>(entriesList.subList(0, end));
+    }
+
+    private String requireNonEmpty(String value, int index, String line) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Missing or empty value at column index " + index + " -> " + line);
+        }
+        return value.trim();
+    }
+
+    private double parseValidatedDouble(String value, int index, String line) {
+        value = requireNonEmpty(value, index, line);
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid value at column index " + index + ": '" + value + "' -> " + line);
+        }
     }
 }

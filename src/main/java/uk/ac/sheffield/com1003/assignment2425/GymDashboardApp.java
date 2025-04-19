@@ -60,7 +60,7 @@ public class GymDashboardApp {
         }
         GymDashboardApp gymDashboardApp = new GymDashboardApp(args[0], args[1]);
         gymDashboardApp.startCLI();
-        gymDashboardApp.startGUI();
+        //gymDashboardApp.startGUI();
     }
 
     // do not change this method
@@ -112,22 +112,40 @@ public class GymDashboardApp {
         printFirstFiveEntriesInCatalog();
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printTotalNumberOfUniqueAges() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
-        int numberOfUniqueAges = 0;
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
+        Set<Double> uniqueAges = new HashSet<>();
+
+        for (Entry entry : allEntries) {
+            double age = entry.getEntryProperty(EntryProperty.AGE);
+            uniqueAges.add(age);
+        }
+
+        int numberOfUniqueAges = uniqueAges.size();
 
         // keep the printed message exactly as it is
         System.out.println("The total number of unique ages in the dataset is : " + numberOfUniqueAges);
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printAverageBmiForTallMembers() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
+        List<Entry> tallMembers = new ArrayList<>();
+
+        for (Entry entry : allEntries) {
+            if (entry.getEntryProperty(EntryProperty.HEIGHT) > 1.8) {
+                tallMembers.add(entry);
+            }
+        }
         double averageBmiForTallMembers = -1;    // if no individuals meet the criteria return -1
 
+        if (!tallMembers.isEmpty()) {
+            averageBmiForTallMembers = entryCatalog
+                    .getAverageValue(EntryProperty.BMI, tallMembers);
+        }
         // keep the printed message exactly as it is
         // Return the average BMI, or -1 if no individuals meet the criteria
         System.out.println("The average BMI of members with a height greater than 1.8 meters is : "
@@ -135,24 +153,47 @@ public class GymDashboardApp {
     }
 
 
-    // TODO edit this method, keeping the lines indicated
-    private void printAverageFatPercentage() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
-        double averageFatPercentage = -1;   // if no individuals meet the criteria return -1
 
+    private void printAverageFatPercentage() {
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
+        List<Entry> frequentWorkoutMembers = new ArrayList<>();
+
+        for (Entry entry : allEntries) {
+            if (entry.getEntryProperty(EntryProperty.WORKOUT_FREQUENCY) > 4) {
+                frequentWorkoutMembers.add(entry);
+            }
+        }
+
+        double averageFatPercentage = -1;   // if no individuals meet the criteria return -1
+        if (!frequentWorkoutMembers.isEmpty()) {
+            averageFatPercentage = entryCatalog
+                    .getAverageValue(EntryProperty.BODY_FAT_PERCENTAGE, frequentWorkoutMembers);
+        }
         // keep the printed message exactly as it is
         // Return the average body fat percentage, or -1 if no members meet the criteria
         System.out.println("The average fat percentage for members who workout more than 4 days a week is : "
                 + Double.parseDouble(String.format("%.2f", averageFatPercentage)));
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printAverageBmiForAdvancedLevelMembers() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
+        List<Entry> advancedLevelMembers = new ArrayList<>();
+
+        for (Entry entry : allEntries) {
+            if (entry.getEntryProperty(EntryProperty.EXPERIENCE_LEVEL) == 3) {
+                advancedLevelMembers.add(entry);
+            }
+        }
+
         double averageBmiForAdvancedLevelMembers = -1;   // if no individuals meet the criteria return -1
 
+        if (!advancedLevelMembers.isEmpty()) {
+            averageBmiForAdvancedLevelMembers = entryCatalog
+                    .getAverageValue(EntryProperty.BMI, advancedLevelMembers);
+        }
 
         // keep the printed message exactly as it is
         // Return the average BMI, or -1 if no members meet the criteria
@@ -160,33 +201,52 @@ public class GymDashboardApp {
                 + Double.parseDouble(String.format("%.2f", averageBmiForAdvancedLevelMembers)));
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printMembersCountWaterIntakeAbove3Liters() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
         int count = 0;
 
+        for (Entry entry : allEntries) {
+            if (entry.getEntryProperty(EntryProperty.WATER_INTAKE) > 3.0) {
+                count++;
+            }
+        }
         // keep the printed message exactly as it is
         // Return the count of members with water intake above 3 liters
         System.out.println("The number of members with a water intake above 3 litres is : " + count);
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printPercentageAboveHealthyBmi() {
-        // Tip: you might find handy the method getEntryProperty in the class Entry
-        // implementation goes here
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
         double percentageAboveHealthyBmi = -1;  // if no individuals meet the criteria return -1
 
+        if (!allEntries.isEmpty()) {
+            int total = allEntries.size();
+            int countAbove25 = 0;
+
+            for (Entry entry : allEntries) {
+                if (entry.getEntryProperty(EntryProperty.BMI) > 25.0) {
+                    countAbove25++;
+                }
+            }
+            percentageAboveHealthyBmi = ((double) countAbove25 / total) * 100;
+        }
         // keep the printed message exactly as it is
         // Return the percentage of members with BMI above 25
         System.out.println("The percentage of members with BMI above 25 is : " + percentageAboveHealthyBmi);
     }
 
-    // TODO edit this method, keeping the lines indicated
+
     private void printNumberOfMembersWithYogaWorkoutType() {
-        // Tip: you might find handy implementing the method getEntriesListByEntryDetail method in EntryCatalog
-        // implementation goes here
-        int count = 0;
+
+        List<Entry> allEntries = entryCatalog.getEntriesList();
+        List<Entry> yogaEntries = ((EntryCatalog) entryCatalog)
+                .getEntriesListByEntryDetail(allEntries, EntryDetail.WORKOUT_TYPE, "Yoga");
+
+        int count = yogaEntries.size();
 
         // keep the printed message exactly as it is
         // Return the number of members in the dataset with a Yoga workout

@@ -33,5 +33,5 @@ testing {
 }
 
 application {
-    mainClass = 'uk.ac.sheffield.com1003.assignment.GymDashboard'
+    mainClass = 'uk.ac.sheffield.com1003.assignment2425.GymDashboardApp'
 }

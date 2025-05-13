@@ -60,7 +60,7 @@ public class GymDashboardApp {
         }
         GymDashboardApp gymDashboardApp = new GymDashboardApp(args[0], args[1]);
         gymDashboardApp.startCLI();
-        //gymDashboardApp.startGUI();
+        gymDashboardApp.startGUI();
     }
 
     // do not change this method

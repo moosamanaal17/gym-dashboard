@@ -11,21 +11,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// This is the main class used to run the assignment's GUI.
-// TODO where indicated, REPLACE default implementations by your own implementations
-// TODO where indicated, KEEP default implementations as it will be used by JUnit tests during assessment
-// TODO you WILL NEED to add new imports
-// TODO you WILL NEED to add new methods and variables and constants
-// TODO you WILL NEED to add new classes
-// TODO remove the comments and tips provided with this template
-// TODO add your own comments
-// TODO document the class and methods with JavaDoc
-
+/**
+ * The entry point for the gym dashboard system
+ * It handles:
+ * - Reading entries from a CSV file
+ * - Reading and passing queries from a text file
+ * - Displaying results through CLI
+ * - Launching the GUI
+ */
 public class GymDashboardApp {
+
     private final AbstractEntryCatalog entryCatalog;
     private final List<Query> builtQueriesList;
 
-    // do not change the constructor
+    /**
+     * Constructs a GymDashboardApp by loading entries and queries
+     *
+     * @param entriesFileName path to the CSV file containing gym entries
+     * @param queryFileName path to file containing queries
+     */
     public GymDashboardApp(String entriesFileName, String queryFileName) {
         AbstractEntryCatalog abstractEntryCatalog = null;
         List<Query> builtQueriesList = null;
@@ -50,7 +54,11 @@ public class GymDashboardApp {
 
     }
 
-    // do not change this main method
+    /**
+     * Main method to launch the application
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         if (args.length == 0) {
             args = new String[]{
@@ -63,7 +71,9 @@ public class GymDashboardApp {
         gymDashboardApp.startGUI();
     }
 
-    // do not change this method
+    /**
+     * Starts the CLI. prints question answers and executes parsed queries
+     */
     public void startCLI() {
         // Basic catalogue information
         printQuestionAnswers();
@@ -72,7 +82,9 @@ public class GymDashboardApp {
         executeQueries();
     }
 
-    // do not change this method
+    /**
+     * Execute all parsed queries and prints the top 5 matching entries for each
+     */
     private void executeQueries() {
         System.out.println("\n======================================");
         System.out.println("Executing queries...");
@@ -90,13 +102,17 @@ public class GymDashboardApp {
         System.out.println("\n======================================");
     }
 
-    // do not change this method
+    /**
+     * Prints how many queries were successfully parsed and stored
+     */
     private void printNumberQueries() {
         System.out.println("In total, " + builtQueriesList.size() + " queries were found.");
         System.out.println();
     }
 
-    // do not change this method
+    /**
+     * Prints answers to 7 required questions
+     */
     private void printQuestionAnswers() {
         System.out.println("\n======================================");
         System.out.println("Printing question answers...\n");
@@ -112,7 +128,9 @@ public class GymDashboardApp {
         printFirstFiveEntriesInCatalog();
     }
 
-
+    /**
+     * Calculates and prints the number of unique AGE values in the dataset
+     */
     private void printTotalNumberOfUniqueAges() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -125,11 +143,12 @@ public class GymDashboardApp {
 
         int numberOfUniqueAges = uniqueAges.size();
 
-        // keep the printed message exactly as it is
         System.out.println("The total number of unique ages in the dataset is : " + numberOfUniqueAges);
     }
 
-
+    /**
+     * Calculates and prints the average BMI for members taller than 1.8 meters
+     */
     private void printAverageBmiForTallMembers() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -146,14 +165,15 @@ public class GymDashboardApp {
             averageBmiForTallMembers = entryCatalog
                     .getAverageValue(EntryProperty.BMI, tallMembers);
         }
-        // keep the printed message exactly as it is
+
         // Return the average BMI, or -1 if no individuals meet the criteria
         System.out.println("The average BMI of members with a height greater than 1.8 meters is : "
                 + Double.parseDouble(String.format("%.2f",averageBmiForTallMembers)));
     }
 
-
-
+    /**
+     * Calculates and prints average fat percentage for members who work out more than 4 times per week
+     */
     private void printAverageFatPercentage() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -170,13 +190,15 @@ public class GymDashboardApp {
             averageFatPercentage = entryCatalog
                     .getAverageValue(EntryProperty.BODY_FAT_PERCENTAGE, frequentWorkoutMembers);
         }
-        // keep the printed message exactly as it is
+
         // Return the average body fat percentage, or -1 if no members meet the criteria
         System.out.println("The average fat percentage for members who workout more than 4 days a week is : "
                 + Double.parseDouble(String.format("%.2f", averageFatPercentage)));
     }
 
-
+    /**
+     * Calculates and prints the average BMI of members with advanced experience level.
+     */
     private void printAverageBmiForAdvancedLevelMembers() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -195,13 +217,14 @@ public class GymDashboardApp {
                     .getAverageValue(EntryProperty.BMI, advancedLevelMembers);
         }
 
-        // keep the printed message exactly as it is
         // Return the average BMI, or -1 if no members meet the criteria
         System.out.println("The average BMI of members who have an Advanced level of experience is : "
                 + Double.parseDouble(String.format("%.2f", averageBmiForAdvancedLevelMembers)));
     }
 
-
+    /**
+     * Calculates and prints how many members drinnk more than 3 litres of water per day
+     */
     private void printMembersCountWaterIntakeAbove3Liters() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -212,12 +235,14 @@ public class GymDashboardApp {
                 count++;
             }
         }
-        // keep the printed message exactly as it is
+
         // Return the count of members with water intake above 3 liters
         System.out.println("The number of members with a water intake above 3 litres is : " + count);
     }
 
-
+    /**
+     * Calculates and prints the percentage of members with BMI above 25
+     */
     private void printPercentageAboveHealthyBmi() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -234,12 +259,14 @@ public class GymDashboardApp {
             }
             percentageAboveHealthyBmi = ((double) countAbove25 / total) * 100;
         }
-        // keep the printed message exactly as it is
+
         // Return the percentage of members with BMI above 25
         System.out.println("The percentage of members with BMI above 25 is : " + percentageAboveHealthyBmi);
     }
 
-
+    /**
+     * Calculates and prints how many members have Yoga as their workout type.
+     */
     private void printNumberOfMembersWithYogaWorkoutType() {
 
         List<Entry> allEntries = entryCatalog.getEntriesList();
@@ -248,12 +275,10 @@ public class GymDashboardApp {
 
         int count = yogaEntries.size();
 
-        // keep the printed message exactly as it is
         // Return the number of members in the dataset with a Yoga workout
         System.out.println("The number of members with Yoga workout type is : " + count);
     }
 
-    // do not change this method
     private void printFirstFiveEntriesInCatalog() {
         System.out.println("\n======================================");
         System.out.println("Printing first five gym entries in catalog...\n");
@@ -261,7 +286,11 @@ public class GymDashboardApp {
         System.out.println("\n======================================");
     }
 
-    // do not change this method
+    /**
+     * Prints upto 5 entries from the given list
+     *
+     * @param entriesList list of entries to print
+     */
     private void printFirstFiveEntriesInList(List<Entry> entriesList) {
         int count = 1;
         for (Entry e : entriesList){
@@ -270,8 +299,7 @@ public class GymDashboardApp {
                 break;
         }
     }
-
-    // do not change this method
+    
     public void startGUI() {
         // Start GUI
         AbstractGymDashboardPanel gymDashboardPanel = new GymDashboardPanel(entryCatalog);

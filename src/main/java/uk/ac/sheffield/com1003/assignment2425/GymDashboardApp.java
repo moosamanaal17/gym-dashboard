@@ -299,7 +299,7 @@ public class GymDashboardApp {
                 break;
         }
     }
-    
+
     public void startGUI() {
         // Start GUI
         AbstractGymDashboardPanel gymDashboardPanel = new GymDashboardPanel(entryCatalog);

@@ -9,27 +9,35 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
-// This class provides some default code, but it needs to be completely replaced
-// TODO replace default implementations by your own implementations
-// TODO you WILL NEED to add new imports
-// TODO you WILL NEED to add new methods and variables and constants
-// TODO you WILL NEED to add new classes
-// TODO remove the comments and tips provided with this template
-// TODO add your own comments
-// TODO document the class and methods with JavaDoc
+/**
+ * HistogramPanel is responsible for drawing the visual representation
+ * of the histogram which includes:
+ * - Axes and Labels
+ * - Bars based on frequency
+ * - An average line
+ * It renders a histogram based on the currently selected EntryProperty
+ * and filtered data from the parent panel
+ */
 
 public class HistogramPanel extends AbstractHistogramPanel {
     private static final int PADDING = 100;
     private static final int AXIS_THICKNESS = 2;
     private static final int LABEL_GAP = 4;
 
+    /**
+     * Constructor for HistogramPanel
+     *
+     * @param parentPanel dashboard panel that owns the histogram panel
+     * @param histogram histogram data model
+     */
     public HistogramPanel(AbstractGymDashboardPanel parentPanel, AbstractHistogram histogram) {
         super(parentPanel, histogram);
     }
 
+    /**
+     * Overrides paintComponent to draw all histogram components
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -45,6 +53,9 @@ public class HistogramPanel extends AbstractHistogramPanel {
         drawYAxisTitle(g2);
     }
 
+    /**
+     * Draws the x and y axes of the histogram
+     */
     private void drawAxes(Graphics2D g2) {
         int width = getWidth();
         int height = getHeight();
@@ -59,14 +70,17 @@ public class HistogramPanel extends AbstractHistogramPanel {
         g2.draw(new Line2D.Double(x0, y0, x0, PADDING));
     }
 
+    /**
+     * Draws horizontal dashed grid lines and y-axis value labels
+     */
     private void drawYAxisLabels(Graphics2D g2) {
         int xOrigin = PADDING;
         int yOrigin = getHeight() - PADDING;
         int height = getHeight();
 
-        int maxCount = getHistogram().largestBinCount();
+        int maxCount = getHistogram().largestBinCount(); // Highest frequency
         int chartHeight = height - 2 * PADDING;
-        int numTicks = 5;
+        int numTicks = 5; // Number of horizontal grid lines
 
         g2.setFont(new Font("Arial", Font.PLAIN, 10));
 
@@ -75,10 +89,12 @@ public class HistogramPanel extends AbstractHistogramPanel {
             int y = yOrigin - (int) ((chartHeight * i) / (double) numTicks);
             String label = String.valueOf(count);
 
+            // Draw y-axis tick label
             int labelWidth = g2.getFontMetrics().stringWidth(label);
             g2.setColor(Color.BLACK);
             g2.drawString(label, xOrigin - labelWidth - 10, y + 4);
 
+            // Draw horizontal dashed grid line
             Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
                     0, new float[]{4}, 0);
 
@@ -88,18 +104,26 @@ public class HistogramPanel extends AbstractHistogramPanel {
         }
     }
 
+    /**
+     * Draws the y-axis title "frequency"
+     */
     private void drawYAxisTitle(Graphics2D g2) {
         String title = "Frequency";
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         FontMetrics fm = g2.getFontMetrics();
         int stringWidth = fm.stringWidth(title);
 
+        // Rotate and draw the title
         Graphics2D g2Rotated = (Graphics2D) g2.create();
         g2Rotated.setColor(Color.BLACK);
         g2Rotated.rotate(-Math.PI / 2);
         g2Rotated.drawString(title, -getHeight() / 2 - stringWidth / 2, 40);
         g2Rotated.dispose();
     }
+
+    /**
+     * Draws histogram bars based on frequency
+     */
     private void drawBars(Graphics2D g2) {
         List<HistogramBin> bins = getHistogram().getBinsInBoundaryOrder();
         if (bins.isEmpty()) return;
@@ -134,6 +158,9 @@ public class HistogramPanel extends AbstractHistogramPanel {
         }
     }
 
+    /**
+     * Draws a vertical red line at the average property value
+     */
     private void drawAverageLine(Graphics2D g2) {
         double average = getHistogram().getAveragePropertyValue();
         double min = getHistogram().getMinPropertyValue();
@@ -145,6 +172,7 @@ public class HistogramPanel extends AbstractHistogramPanel {
         int height = getHeight();
         int chartWidth = width - 2 * PADDING;
 
+        // Calculate normalized x-position for the average line
         double normalizedPosition = (average - min) / (max - min);
         int x = (int) (PADDING + normalizedPosition * chartWidth);
         int yTop = PADDING;
@@ -155,6 +183,9 @@ public class HistogramPanel extends AbstractHistogramPanel {
         g2.drawLine(x, yTop, x, yBottom);
     }
 
+    /**
+     * Draws labels below each histogram bar indicating bin boundaries
+     */
     private void drawLabels(Graphics2D g2) {
         List<HistogramBin> bins = getHistogram().getBinsInBoundaryOrder();
         if (bins.isEmpty()) return;
@@ -171,10 +202,12 @@ public class HistogramPanel extends AbstractHistogramPanel {
             HistogramBin bin = bins.get(i);
             double x = PADDING + i * barWidth;
 
+            // Label with lower boundary
             String label = String.format("%.1f", bin.getLowerBoundary());
             g2.drawString(label,  (int) x, y0 + 15 + LABEL_GAP);
         }
 
+        // Label the upper boundary of the final bin
         HistogramBin last = bins.get(bins.size() - 1);
         String maxLabel = String.format("%.1f", last.getUpperBoundary());
         int xMax = width - PADDING - g2.getFontMetrics().stringWidth(maxLabel);

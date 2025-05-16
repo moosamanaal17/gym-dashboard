@@ -77,7 +77,7 @@ public class GymDashboardPanel extends AbstractGymDashboardPanel {
         if (propertyName == null || operator == null || valueText.isEmpty()) return;
 
         try {
-            EntryProperty property = EntryProperty.fromName(propertyName);
+            EntryProperty property = EntryProperty.fromPropertyName(propertyName);
             double numericValue = Double.parseDouble(valueText);
 
             // Validate operator
